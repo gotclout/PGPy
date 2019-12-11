@@ -2420,6 +2420,13 @@ class PGPKey(Armorable, ParentRef, PGPObject):
             if uid is None and self.parent is not None:
                 uid = next(iter(self.parent.userids), None)
 
+        '''
+        BEGIN
+          Bug Fix
+            Issue: #304
+             Desc: Encrypt with pub key when uid selfsig.cipherprefs list empty
+              Ref: https://github.com/SecurityInnovation/PGPy/issues/304
+        '''
         if uid.selfsig.cipherprefs:
             pref_cipher = next(c for c in uid.selfsig.cipherprefs if c.is_supported)
         else:
@@ -2429,6 +2436,10 @@ class PGPKey(Armorable, ParentRef, PGPObject):
 
         if not cipher_algo:
             raise PGPError("Symetric algorithm not provided in key preferences or keyword cipher")
+        '''
+        END
+          Bug Fix
+        '''
 
         if cipher_algo not in uid.selfsig.cipherprefs:
             warnings.warn("Selected symmetric algorithm not in key preferences", stacklevel=3)
