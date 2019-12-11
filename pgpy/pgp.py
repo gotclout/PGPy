@@ -2425,6 +2425,11 @@ class PGPKey(Armorable, ParentRef, PGPObject):
         else:
             pref_cipher = None
 
+        cipher_algo = prefs.pop('cipher', pref_cipher)
+
+        if not cipher_algo:
+            raise PGPError("Symetric algorithm not provided in key preferences or keyword cipher")
+
         if cipher_algo not in uid.selfsig.cipherprefs:
             warnings.warn("Selected symmetric algorithm not in key preferences", stacklevel=3)
 
